@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decidable and Undecidable Problems</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a2e;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            flex: 1;
+            display: none;
+            padding: 3rem;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: block;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Title Slide */
+        .slide-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .slide-title h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .slide-title p {
+            font-size: 1.8rem;
+            opacity: 0.95;
+        }
+
+        .icon {
+            font-size: 6rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Content Slides */
+        .slide-content {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .slide-content h2 {
+            font-size: 3rem;
+            color: #2d3748;
+            margin-bottom: 2rem;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 1rem;
+        }
+
+        .content-text {
+            font-size: 1.5rem;
+            color: #4a5568;
+            line-height: 2;
+            margin-bottom: 1rem;
+        }
+
+        /* Definition Slides */
+        .definition-box {
+            background: #f0fdf4;
+            border-left: 8px solid #22c55e;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            margin: 2rem 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .definition-box.red {
+            background: #fef2f2;
+            border-left-color: #ef4444;
+        }
+
+        .definition-text {
+            font-size: 1.6rem;
+            color: #1f2937;
+            font-weight: 600;
+            line-height: 1.8;
+        }
+
+        .key-points {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .key-point {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            border-left: 4px solid #3b82f6;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-size: 1.3rem;
+            color: #374151;
+        }
+
+        /* Example Slides */
+        .example-item {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            border-left: 4px solid #22c55e;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .example-item.undecidable {
+            border-left-color: #ef4444;
+        }
+
+        .example-item h3 {
+            font-size: 1.8rem;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .example-item p {
+            font-size: 1.3rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+
+        .example-solution {
+            font-size: 1.2rem;
+            color: #3b82f6;
+            font-family: 'Courier New', monospace;
+            margin-top: 0.5rem;
+        }
+
+        .example-reason {
+            background: #fef2f2;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Algorithm Slide */
+        .algorithm-box {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .algorithm-step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .step-number {
+            background: #3b82f6;
+            color: white;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+            margin-right: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .step-text {
+            font-size: 1.5rem;
+            color: #374151;
+            padding-top: 0.5rem;
+        }
+
+        .note-box {
+            background: #f0fdf4;
+            border-left: 4px solid #22c55e;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        /* Comparison Table */
+        table {
+            width: 100%;
+            background: white;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        th, td {
+            padding: 1.5rem;
+            text-align: left;
+            font-size: 1.3rem;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        tbody tr:nth-child(odd) {
+            background: white;
+        }
+
+        td {
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .decidable-cell {
+            color: #22c55e;
+            font-weight: 600;
+        }
+
+        .undecidable-cell {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        /* Grid Layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .grid-item {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            border-top: 4px solid #f59e0b;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .grid-item h3 {
+            font-size: 1.6rem;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .grid-item p {
+            font-size: 1.2rem;
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        /* Summary */
+        .summary-item {
+            display: flex;
+            align-items: flex-start;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .summary-number {
+            background: #22c55e;
+            color: white;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+            margin-right: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .summary-text {
+            font-size: 1.4rem;
+            color: #374151;
+            padding-top: 0.5rem;
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        .navigation {
+            background: #2d3748;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-weight: 600;
+        }
+
+        .nav-button:hover {
+            background: #2563eb;
+        }
+
+        .nav-button:disabled {
+            background: #64748b;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        /* Halting Problem Special */
+        .problem-box {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .problem-box h3 {
+            color: #dc2626;
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+        }
+
+        .problem-quote {
+            font-size: 1.5rem;
+            font-style: italic;
+            color: #374151;
+            line-height: 1.8;
+        }
+
+        .impact-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Title -->
+        <div class="slide slide-title active">
+            <div class="icon">🧠</div>
+            <h1>Decidable and Undecidable Problems</h1>
+            <p>Understanding the Limits of Computation</p>
+        </div>
+
+        <!-- Slide 2: Introduction -->
+        <div class="slide slide-content">
+            <h2>💻 What is Computability?</h2>
+            <p class="content-text">Computability theory classifies problems into two fundamental categories:</p>
+            <p class="content-text">• <strong>Decidable Problems</strong> - Can be solved algorithmically</p>
+            <p class="content-text">• <strong>Undecidable Problems</strong> - Cannot be solved by any algorithm</p>
+            <br>
+            <p class="content-text">This classification helps us understand the boundaries of what computers can and cannot do.</p>
+        </div>
+
+        <!-- Slide 3: Decidable Definition -->
+        <div class="slide slide-content">
+            <h2>Decidable Problems</h2>
+            <div class="definition-box">
+                <p class="definition-text">A decidable problem has an algorithm that can provide a correct 'yes' or 'no' answer for all inputs and halts after a finite number of steps.</p>
+            </div>
+            <div class="key-points">
+                <div class="key-point">✓ Algorithm always terminates</div>
+                <div class="key-point">✓ Produces correct answer</div>
+                <div class="key-point">✓ Works for all possible inputs</div>
+                <div class="key-point">✓ Deterministic solution exists</div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Decidable Examples -->
+        <div class="slide slide-content">
+            <h2>✅ Examples of Decidable Problems</h2>
+            <div class="example-item">
+                <h3>Even or Odd Number</h3>
+                <p>Determining whether a number is even or odd</p>
+                <div class="example-solution">→ Check if n % 2 == 0</div>
+            </div>
+            <div class="example-item">
+                <h3>Email Validation</h3>
+                <p>Checking if a string is a valid email address</p>
+                <div class="example-solution">→ Pattern matching with regex</div>
+            </div>
+            <div class="example-item">
+                <h3>Path Existence</h3>
+                <p>Determining if a path exists between two nodes in a graph</p>
+                <div class="example-solution">→ Use BFS or DFS algorithm</div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Algorithm Example -->
+        <div class="slide slide-content">
+            <h2>Algorithm Example: Prime Number Check</h2>
+            <div class="algorithm-box">
+                <h3 style="color: #3b82f6; margin-bottom: 2rem; font-size: 2rem;">Algorithm:</h3>
+                <div class="algorithm-step">
+                    <div class="step-number">1</div>
+                    <div class="step-text">Input a number n</div>
+                </div>
+                <div class="algorithm-step">
+                    <div class="step-number">2</div>
+                    <div class="step-text">Divide n by all integers from 2 to √n</div>
+                </div>
+                <div class="algorithm-step">
+                    <div class="step-number">3</div>
+                    <div class="step-text">If no divisor is found = "Prime"</div>
+                </div>
+                <div class="algorithm-step">
+                    <div class="step-number">4</div>
+                    <div class="step-text">Otherwise = "Not Prime"</div>
+                </div>
+                <div class="note-box">
+                    <p class="definition-text">This algorithm halts for all inputs — therefore, the problem is decidable.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: More Decidable Examples -->
+        <div class="slide slide-content">
+            <h2>✅ Additional Decidable Examples</h2>
+            <div class="example-item">
+                <h3>Balanced Parentheses</h3>
+                <p>Check if expression like (a + b) * (c + d) has balanced parentheses</p>
+                <div class="example-solution">→ Use stack data structure</div>
+            </div>
+            <div class="example-item">
+                <h3>Sorting Numbers</h3>
+                <p>Arrange numbers in ascending order</p>
+                <div class="example-solution">→ Merge sort, Quick sort, etc.</div>
+            </div>
+            <div class="example-item">
+                <h3>String Palindrome</h3>
+                <p>Check if a string reads the same forwards and backwards</p>
+                <div class="example-solution">→ Compare characters from both ends</div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Undecidable Definition -->
+        <div class="slide slide-content">
+            <h2>Undecidable Problems</h2>
+            <div class="definition-box red">
+                <p class="definition-text">An undecidable problem is one for which no algorithm can be constructed that always provides a correct 'yes' or 'no' answer for every input.</p>
+            </div>
+            <div class="key-points">
+                <div class="key-point">✗ No universal algorithm exists</div>
+                <div class="key-point">✗ May run forever on some inputs</div>
+                <div class="key-point">✗ Cannot guarantee termination</div>
+                <div class="key-point">✗ Fundamental computational limits</div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Halting Problem -->
+        <div class="slide slide-content" style="background: linear-gradient(135deg, #fef2f2 0%, #fecdd3 100%);">
+            <h2>∞ The Halting Problem</h2>
+            <div class="problem-box">
+                <h3>The Problem:</h3>
+                <p class="problem-quote">"Given a program and an input, can we determine whether the program will eventually stop or run forever?"</p>
+            </div>
+            <div class="definition-box red">
+                <p class="definition-text">Alan Turing proved that there can be no universal algorithm capable of solving this problem for all programs.</p>
+            </div>
+            <div class="impact-box">
+                <p class="definition-text">This means that even with unlimited computing power, certain outcomes cannot be predicted algorithmically.</p>
+            </div>
+        </div>
+
+        <!-- Slide 9: Undecidable Examples -->
+        <div class="slide slide-content">
+            <h2>❌ Examples of Undecidable Problems</h2>
+            <div class="example-item undecidable">
+                <h3>Program Equivalence</h3>
+                <p>Determining if two arbitrary programs will produce the same output for all inputs</p>
+                <div class="example-reason">
+                    <p><strong>Why undecidable:</strong> Would require solving the Halting Problem as a substep</p>
+                </div>
+            </div>
+            <div class="example-item undecidable">
+                <h3>Post Correspondence Problem (PCP)</h3>
+                <p>Checking if a sequence of string pairs can be arranged to form matching concatenations</p>
+                <div class="example-reason">
+                    <p><strong>Why undecidable:</strong> No general algorithm exists for all cases</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: More Undecidable Examples -->
+        <div class="slide slide-content">
+            <h2>❌ Additional Undecidable Problems</h2>
+            <div class="example-item undecidable">
+                <h3>Rice's Theorem</h3>
+                <p>Any non-trivial property about the behavior of programs is undecidable</p>
+                <div class="example-reason">
+                    <p><strong>Why undecidable:</strong> Generalizes many undecidability results</p>
+                </div>
+            </div>
+            <div class="example-item undecidable">
+                <h3>Tile Problem</h3>
+                <p>Can a given set of tiles cover an infinite plane?</p>
+                <div class="example-reason">
+                    <p><strong>Why undecidable:</strong> No algorithm can decide this for all tile sets</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Real-World Example -->
+        <div class="slide slide-content" style="background: linear-gradient(135deg, #faf5ff 0%, #e9d5ff 100%);">
+            <h2>🌍 Real-World Application</h2>
+            <div class="problem-box">
+                <h3>Scenario:</h3>
+                <p class="problem-quote">Design an AI model to determine if any given software code will crash or loop infinitely</p>
+            </div>
+            <div class="definition-box red">
+                <p class="definition-text">No such algorithm can exist because this task is equivalent to solving the Halting Problem.</p>
+            </div>
+            <div style="background: #dbeafe; padding: 2rem; border-radius: 0.5rem; margin-top: 1.5rem;">
+                <h3 style="color: #1e40af; font-size: 1.6rem; margin-bottom: 1rem;">Implications:</h3>
+                <p class="content-text">• Software verification has limits</p>
+                <p class="content-text">• Complete bug detection is impossible</p>
+                <p class="content-text">• Testing remains essential</p>
+                <p class="content-text">• Formal methods have boundaries</p>
+            </div>
+        </div>
+
+        <!-- Slide 12: Comparison Table -->
+        <div class="slide slide-content">
+            <h2 style="text-align: center;">Decidable vs. Undecidable: Key Differences</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Decidable</th>
+                        <th>Undecidable</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="font-weight: bold;">Algorithm Exists?</td>
+                        <td class="decidable-cell">Yes</td>
+                        <td class="undecidable-cell">No</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold;">Always Terminates?</td>
+                        <td class="decidable-cell">Yes</td>
+                        <td class="undecidable-cell">No guarantee</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold;">Correct Answer?</td>
+                        <td class="decidable-cell">Always</td>
+                        <td class="undecidable-cell">Cannot guarantee</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold;">Examples</td>
+                        <td class="decidable-cell">Sorting, searching, prime checking</td>
+                        <td class="undecidable-cell">Halting problem, program equivalence</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Slide 13: Why It Matters -->
+        <div class="slide slide-content" style="background: linear-gradient(135deg, #fffbeb 0%, #fde68a 100%);">
+            <h2 style="text-align: center;">Why Does This Matter?</h2>
+            <div class="grid-2">
+                <div class="grid-item">
+                    <h3>Sets Realistic Expectations</h3>
+                    <p>Understand what problems computers can and cannot solve</p>
+                </div>
+                <div class="grid-item">
+                    <h3>Guides Algorithm Design</h3>
+                    <p>Focus efforts on solvable problems, use heuristics for others</p>
+                </div>
+                <div class="grid-item">
+                    <h3>Theoretical Foundation</h3>
+                    <p>Basis for computational complexity theory and computer science</p>
+                </div>
+                <div class="grid-item">
+                    <h3>Practical Applications</h3>
+                    <p>Influences software engineering, AI development, and verification</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Summary -->
+        <div class="slide slide-content" style="background: linear-gradient(135deg, #ecfdf5 0%, #a7f3d0 100%);">
+            <h2>⚡ Key Takeaways</h2>
+            <div class="summary-item">
+                <div class="summary-number">1</div>
+                <div class="summary-text">Decidable problems have algorithms that always terminate and give correct answers</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-number">2</div>
+                <div class="summary-text">Undecidable problems cannot be solved by any algorithm for all inputs</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-number">3</div>
+                <div class="summary-text">The Halting Problem is the most famous undecidable problem</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-number">4</div>
+                <div class="summary-text">Understanding these limits is crucial for computer science and AI development</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-number">5</div>
+                <div class="summary-text">Not all computational problems can be solved algorithmically</div>
+            </div>
+        </div>
+
+        <!-- Slide 15: Questions -->
+        <div class="slide slide-title">
+            <div class="icon">❓</div>
+            <h1>Questions?</h1>
+            <p>Thank you for your attention!</p>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
+            <div class="slide-counter">
+                <span id="currentSlide">1</span> / <span id="totalSlides">15</span>
+            </div>
+            <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">Next →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+            
+            // Update button states
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') {
+                changeSlide(-1);
+            } else if (event.key === 'ArrowRight') {
+                changeSlide(1);
+            }
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
